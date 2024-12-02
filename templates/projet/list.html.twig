@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Projets{% endblock %}
+
+{% block stylesheets %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #74ebd5, #acb6e5);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+        }
+        .project-container {
+            background: #fff;
+            padding: 2.5rem;
+            border-radius: 10px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 720px;
+            width: 100%;
+            margin: auto;
+        }
+        .project-container h1 {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+        }
+        .project-item {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1rem 0;
+        }
+        .project-item:last-child {
+            border-bottom: none;
+        }
+        .btn-primary {
+            background-color: #74ebd5;
+            border: none;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background-color: #4cb1c9;
+        }
+        .btn-secondary {
+            background-color: #acb6e5;
+            border: none;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .btn-secondary:hover {
+            background-color: #8a9bb5;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="project-container">
+    <h1>Liste des Projets</h1>
+
+    <a href="{{ path('projet_create') }}" class="btn btn-primary mb-3">Créer un Projet</a>
+
+    {% for projet in projets %}
+        <div class="project-item">
+            <h3>{{ projet.titre }}</h3>
+            <p>{{ projet.description }}</p>
+            <p><small>Créé le : {{ projet.dateCreation|date('d/m/Y') }}</small></p>
+            <div class="action-buttons">
+                <a href="{{ path('projet_show_page', { id: projet.id }) }}" class="btn btn-primary">Voir plus</a>
+                {% if is_granted('EDIT', projet) %}
+                    <a href="{{ path('projet_edit', { id: projet.id }) }}" class="btn btn-secondary">Modifier</a>
+                {% endif %}
+                {% if is_granted('DELETE', projet) %}
+                    <form action="{{ path('projet_delete', { id: projet.id }) }}" method="POST" style="display: inline;">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')">Supprimer</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <p>Aucun projet trouvé.</p>
+    {% endfor %}
+</div>
+{% endblock %}

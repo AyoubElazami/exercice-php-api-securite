@@ -1,0 +1,93 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+app_login:
+    path: /login
+    controller: App\Controller\SecurityController::login
+
+
+dashboard:
+    path: /dashboard
+    controller: App\Controller\DashboardController::index
+
+societe_list:
+    path: /societes
+    controller: App\Controller\SocieteController::list
+    methods: GET
+societe_list_page:
+    path: /societess
+    controller: App\Controller\SocieteController::listPage
+    methods: GET
+
+societe_create:
+    path: /societe/new
+    controller: App\Controller\SocieteController::create
+    methods: [GET, POST]   
+
+projet_list:
+    path: /projets
+    controller: App\Controller\ProjetController::list
+    methods: GET
+projet_list_page:
+    path: /projets/page
+    controller: App\Controller\ProjetController::listPage
+    methods: GET
+
+projet_show_page:
+    path: /projet/{id}/pag
+    controller: App\Controller\ProjetController::showPage
+    methods: GET
+
+
+projet_create:
+    path: /projet/new
+    controller: App\Controller\ProjetController::create
+    methods: [GET, POST]
+
+projet_get:
+    path: /projet/{id}
+    controller: App\Controller\ProjetController::getProjet
+    methods: GET
+
+# Routes pour UserSociete
+user_societe_add_role:
+    path: /user/{userId}/societe/{societeId}/role
+    controller: App\Controller\UserSocieteController::addRoleToUserInSociete
+    methods: POST
+
+user_societe_remove_role:
+    path: /user/{userId}/societe/{societeId}/role
+    controller: App\Controller\UserSocieteController::removeRoleFromUserInSociete
+    methods: DELETE
+
+user_societe_list:
+    path: /user/{userId}/societes
+    controller: App\Controller\UserSocieteController::getUserSocietes
+    methods: GET
+
+user_register:
+    path: /register
+    controller: App\Controller\SecurityController::register
+    methods: [GET, POST]  
+get_user:
+    path: /user/{id}
+    controller: App\Controller\UserController::getUserById
+    methods: GET
+
+get_all_users:
+    path: /users
+    controller: App\Controller\UserController::getAllUsers
+    methods: GET
+
+projet_update_page:
+    path: /projet/{id}/edit
+    controller: App\Controller\ProjetController::editPage
+    methods: [GET]
+
+projet_delete:
+    path: /projet/{id}/delete
+    controller: App\Controller\ProjetController::delete
+    methods: [POST,DELETE]

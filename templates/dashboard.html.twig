@@ -1,0 +1,179 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - Projets{% endblock %}
+
+{% block stylesheets %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #74ebd5, #acb6e5);
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: #74ebd5;
+            border: none;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            border: none;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .btn-primary:hover {
+            background-color: #4cb1c9;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .project-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .societe-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-container {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .toggle-form {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .logout-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #ff7f50;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .logout-button:hover {
+            background-color: #e56740;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<!-- Bouton Logout -->
+<a href="{{ path('app_logout') }}" class="logout-button">Déconnexion</a>
+
+<div class="container">
+    <h1 class="mb-4">Dashboard - Vos Projets</h1>
+
+    {% for societe in societes %}
+        <div class="societe-section">
+            <h2>{{ societe.nom }}</h2>
+
+            {% if projets[societe.id] is not empty %}
+                {% for projet in projets[societe.id] %}
+                    <div class="project-item">
+                        <div>
+                            <h3>{{ projet.titre }}</h3>
+                            <p>{{ projet.description }}</p>
+                            <p><small>Créé le : {{ projet.dateCreation|date('d/m/Y') }}</small></p>
+                        </div>
+                        {% if roles[societe.id] == 'ROLE_MANAGER' %}
+                            <div>
+                                <!-- Bouton Modifier -->
+                                <a href="{{ path('projet_update_page', { id: projet.id }) }}" class="btn btn-primary">Modifier</a>
+                                <!-- Bouton Supprimer -->
+                                <form method="POST" action="{{ path('projet_delete', { id: projet.id }) }}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer ce projet ?');">
+                                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>Aucun projet trouvé pour cette société.</p>
+            {% endif %}
+
+            {% if roles[societe.id] == 'ROLE_MANAGER' %}
+                <button class="btn btn-primary toggle-form" data-target="#form-{{ societe.id }}">Créer un Projet</button>
+                <div id="form-{{ societe.id }}" class="form-container">
+                    <form method="POST" action="{{ path('projet_create') }}">
+                        <input type="hidden" name="societeId" value="{{ societe.id }}">
+                        <div class="mb-3">
+                            <label for="titre-{{ societe.id }}" class="form-label">Titre</label>
+                            <input type="text" name="titre" id="titre-{{ societe.id }}" class="form-control" placeholder="Titre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description-{{ societe.id }}" class="form-label">Description</label>
+                            <textarea name="description" id="description-{{ societe.id }}" class="form-control" placeholder="Description" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Créer</button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.toggle-form').forEach(button => {
+                button.addEventListener('click', () => {
+                    const target = document.querySelector(button.getAttribute('data-target'));
+                    if (target) {
+                        target.style.display = target.style.display === 'none' || target.style.display === '' ? 'block' : 'none';
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
